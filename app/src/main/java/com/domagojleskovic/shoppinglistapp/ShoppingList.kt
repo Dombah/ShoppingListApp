@@ -2,6 +2,7 @@ package com.domagojleskovic.shoppinglistapp
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,10 +30,10 @@ data class ShoppingItem(
 )
 @Composable
 fun ShoppingListApp(){
-    val sItems by remember { mutableStateOf(listOf<ShoppingItem>()) }
+    var sItems by remember { mutableStateOf(listOf<ShoppingItem>()) }
     var showDialog by remember { mutableStateOf(false)}
     var itemName by remember { mutableStateOf("")}
-    var itemQuantity by remember { mutableStateOf("")}
+    var itemQuantity by remember { mutableStateOf("1")}
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center
@@ -55,7 +56,35 @@ fun ShoppingListApp(){
         if(showDialog){
             AlertDialog(
                 onDismissRequest = {showDialog = false },
-                confirmButton = { /*TODO*/ },
+                confirmButton = {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Button(
+                                        onClick = {
+                                            if(itemName.isNotBlank()){
+                                                val newItem = ShoppingItem(
+                                                    id = sItems.size + 1,
+                                                    name = itemName,
+                                                    quantity = itemQuantity.toInt()
+                                                )
+                                                sItems = sItems + newItem
+                                                showDialog = false
+                                                itemName = ""
+                                                itemQuantity = "1"
+                                            }
+                                        }
+                                     ) {
+                                        Text(text = "Add")
+                                    }
+                                    Button(onClick = { showDialog = false }) {
+                                        Text(text = "Cancel")
+                                    }
+                                }
+                },
                 title = {Text("Add Shopping Item")},
                 text = {
                     Column {
@@ -65,7 +94,9 @@ fun ShoppingListApp(){
                                 itemName = it
                             },
                             singleLine = true,
-                            modifier = Modifier.fillMaxWidth().padding(8.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
                         )
                         OutlinedTextField(
                             value = itemQuantity,
@@ -73,11 +104,22 @@ fun ShoppingListApp(){
                                 itemQuantity = it
                             },
                             singleLine = true,
-                            modifier = Modifier.fillMaxWidth().padding(8.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
                         )
                     }
                 }
             )
         }
     }
+}
+
+@Composable
+fun ShoppingListItem(
+    item:ShoppingItem,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+){
+
 }
